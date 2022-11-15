@@ -8,6 +8,7 @@
 <li>The dataset contains 48 million lines of triplets. Each triplet contains (user id, song id, play counts).
 <li>The overall dataset contains around a million unique users and around 384,000 songs from the million song dataset contained in it.
 <li>Upon decompression, the txt file takes a size of 2.79 GB<br>
+<li> Place your train_triplets.txt file in the data folder to execute this code.<br>
 </ul>
 
 ## Exploratory Data Analysis (EDA):
