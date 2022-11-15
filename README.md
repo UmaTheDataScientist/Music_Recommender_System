@@ -122,3 +122,19 @@ track_metadata_df = pd.read_sql_query("SELECT * from songs", conn)
 ```
 Now let's merge the triplet_dataset_sub_song and track_metadata_df. We will also remove unnecessary columns and duplicate songs. The resultant dataset looks like this:
 ![image](https://user-images.githubusercontent.com/105756607/202042238-69770e03-8fbf-4f4a-a9b2-f26aa2c11330.png)
+
+### Visual Analysis:
+Before we start developing the recommendation engine, let's do some visual analysis of our dataset.<br>
+We will try to see the different trends in songs, albums, releases (That's what she said! 😜)
+
+#### Most popular songs:
+![image](https://user-images.githubusercontent.com/105756607/202046194-034bd533-9a1c-442b-83af-9a36825c3292.png)
+You're the one is the most popular song
+#### Most popular artists:
+![image](https://user-images.githubusercontent.com/105756607/202046624-1f8222a5-6621-4327-9c6c-045037388bc5.png)
+Cold Play is the most popular artist
+
+Even though Cold Play is the most popular artist, they don't have a candidate in the most popular song list.<br>
+
+#### Song vs Artist distribution:
+
