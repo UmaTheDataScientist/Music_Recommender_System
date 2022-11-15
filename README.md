@@ -91,6 +91,8 @@ We can now subset the original dataset to contain only filtered users and songs.
 triplet_dataset_sub = triplet_dataset[triplet_dataset.user.isin(user_subset)]
 del(triplet_dataset)
 triplet_dataset_sub_song = triplet_dataset_sub[triplet_dataset_sub.song.isin(song_subset)]
+triplet_dataset_sub_song = triplet_dataset_sub_song.reset_index()
+triplet_dataset_sub_song.drop(columns = 'index',inplace = True)
 del(triplet_dataset_sub)
 ```
 #### The resultant data subset containing 10,774,558 rows looks like below:
