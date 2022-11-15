@@ -8,6 +8,7 @@
 <li>The dataset contains 48 million lines of triplets. Each triplet contains (user id, song id, play counts).
 <li>The overall dataset contains around a million unique users and around 384,000 songs from the million song dataset contained in it.
 <li>Upon decompression, the txt file takes a size of 2.79 GB<br>
+<li> Place your train_triplets.txt file in the data folder to execute this code.<br>
 </ul>
 
 ## Exploratory Data Analysis (EDA):
@@ -98,3 +99,26 @@ del(triplet_dataset_sub)
 #### The resultant data subset containing 10,774,558 rows looks like below:
 ![image](https://user-images.githubusercontent.com/105756607/202034568-a250bede-70d7-450b-abde-0a953ef4a2a4.png)
 
+### Enhancing The Data:
+<ul>
+<li>Song ID does not give much information. Let's add song name, artist information to our dataset<br>
+<li>This data is provided as a SQL database file and is part of the million songs database.<br>
+<li> Download the data from <a href = 'http://millionsongdataset.com/sites/default/files/AdditionalFiles/track_metadata.db'>here</a>
+<li>Place it in the data folder
+</ul>
+
+```
+#Finding the tables in the track_metadata.db file
+conn = sqlite3.connect('../data/track_metadata.db')
+cur = conn.cursor()
+cur.execute("select name from sqlite_master where type = 'table'")
+cur.fetchall()
+```
+![image](https://user-images.githubusercontent.com/105756607/202040710-f8d62e26-f10d-4769-8ea0-92656352a924.png)
+
+Since songs is the only table in the track_metadata.db, let's add it to a dataframe
+```
+track_metadata_df = pd.read_sql_query("SELECT * from songs", conn)
+```
+Now let's merge the triplet_dataset_sub_song and track_metadata_df. We will also remove unnecessary columns and duplicate songs. The resultant dataset looks like this:
+![image](https://user-images.githubusercontent.com/105756607/202042238-69770e03-8fbf-4f4a-a9b2-f26aa2c11330.png)
