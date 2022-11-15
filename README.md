@@ -96,6 +96,5 @@ triplet_dataset_sub_song.drop(columns = 'index',inplace = True)
 del(triplet_dataset_sub)
 ```
 #### The resultant data subset containing 10,774,558 rows looks like below:
-![image](https://user-images.githubusercontent.com/105756607/202033421-fedd473f-493f-4dc7-93e5-dffba7b5a448.png)
-
+![image](https://user-images.githubusercontent.com/105756607/202034568-a250bede-70d7-450b-abde-0a953ef4a2a4.png)
 
