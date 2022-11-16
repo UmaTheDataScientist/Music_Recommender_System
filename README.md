@@ -213,3 +213,10 @@ is_model.recommend(user_id)
 
 The recommendation system is more personalised for each user.
 
+Look at the recommendations we recieved for the user id 7
+
+![image](https://user-images.githubusercontent.com/105756607/202070163-3f21ab70-bfcd-451c-8a21-f3749f82f517.png)
+
+Interesting right? Let's check for user 100
+
+
