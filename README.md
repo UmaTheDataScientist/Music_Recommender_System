@@ -174,4 +174,42 @@ Any user is most likely to see the following songs in their recommendation if Po
 
 ![image](https://user-images.githubusercontent.com/105756607/202052924-964f7ec0-273c-471b-a6d6-072bd8cceed2.png)
 
+However, This is not enough right? Let's get this more personalised!
+
+![image](https://github.com/UmaTheDataScientist/Music_Recommender_System/blob/main/images/not-good.gif)
+
+### Item Similarity Based Recommendation Engine:
+This recommendation engine is based on calculating similarities between user's items and the other items in our dataset.
+Similarity between two songs is defined as: if 2 songs are being listened to by a large fraction of common users out of the total listeners, the 2 songs are said to be similar.
+
+Similarity(i,j) = intersection(user(i),user(j))/union((user(i),user(j))
+
+On the basis of this similarity metric, we can recommend a song to a user k with the following steps:
+1. Determine the song listened to by the user k
+2. Calculate the similarity of each song in the user's list to those in the dataset.
+3. Determine the songs that are most similar to the songs already listened to by the user.
+4. Select a subset of these songs as recommendation based on the similarity score.
+
+Since Step 2 is computation heavy, we will select most popular 5000 songs to make computation more feasible.
+
+```
+#Subsets of songs
+song_count_subset = song_count_df.head(n=5000)
+song_subset = song_count_subset.song
+triple_dataset_merged_subset = triple_dataset_merged[triple_dataset_merged.song.isin(song_subset)]
+```
+
+The Item based recommendation system:
+```
+train_data,test_data = train_test_split(triple_dataset_merged_subset,test_size = 0.3,random_state = 0)
+is_model = Recommenders.item_similarity_recommender_py()
+is_model.create(train_data,'user','title')
+
+#Change the user_id in the square brackets to get recommendation for any of the 100000 users in the dataset
+user_id = list(train_data.user)[7]
+user_items = is_model.get_user_items(user_id)
+is_model.recommend(user_id)
+```
+
+The recommendation system is more personalised for each user.
 
