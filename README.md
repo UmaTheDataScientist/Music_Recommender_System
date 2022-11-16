@@ -193,7 +193,9 @@ However, This is not enough right? Let's get this more personalised!
 This recommendation engine is based on calculating similarities between user's items and the other items in our dataset.
 Similarity between two songs is defined as: if 2 songs are being listened to by a large fraction of common users out of the total listeners, the 2 songs are said to be similar.
 
+```
 Similarity(i,j) = intersection(user(i),user(j))/union((user(i),user(j))
+```
 
 On the basis of this similarity metric, we can recommend a song to a user k with the following steps:
 1. Determine the song listened to by the user k
@@ -277,3 +279,38 @@ Now that we have understood the Utility Matrix, let's go further:
 
 Enough Chitchat, let's implement the code:
 
+The first thought in your mind should be - But, we don't have **ratings** for our songs. How would we make the Utility Matrix in the first place?
+
+We do however have play_counts for each song. So we will determine if a user likes a song (strenght of likeness) in the range of [0,1] based on play_counts
+
+```
+triple_dataset_merged_sum = triple_dataset_merged[['user','listen_count']].groupby('user').sum().reset_index()
+triple_dataset_merged_sum.rename(columns = {'listen_count':'total_listen_count'},inplace = True)
+triple_dataset_merged = pd.merge(triple_dataset_merged,triple_dataset_merged_sum)
+triple_dataset_merged['fractional_play_count'] = triple_dataset_merged['listen_count']/triple_dataset_merged['total_listen_count']
+```
+
+Output of the merged dataframe:
+![image](https://user-images.githubusercontent.com/105756607/202114509-3f14b027-e26f-48e5-b03e-08947f5525d6.png)
+
+Next, we have to convert this dataframe into a sparse matrix in the format of utility matrix.
+
+```
+small_set = triple_dataset_merged
+user_codes = small_set.user.drop_duplicates().reset_index()
+song_codes = small_set.song.drop_duplicates().reset_index()
+user_codes.rename(columns = {'index':'user_index'},inplace = True)
+song_codes.rename(columns = {'index':'song_index'},inplace = True)
+user_codes['user_index_value'] = list(user_codes.index)
+song_codes['song_index_value'] = list(song_codes.index)
+small_set = pd.merge(small_set,song_codes,how = 'left')
+small_set = pd.merge(small_set,user_codes,how = 'left')
+mat_candidate = small_set[['user_index_value','song_index_value','fractional_play_count']]
+data_array = mat_candidate.fractional_play_count.values
+row_array = mat_candidate.user_index_value.values
+col_array = mat_candidate.song_index_value.values
+data_sparse = coo_matrix((data_array,(row_array,col_array)),dtype = float)
+```
+
+Now that we have our utility matrix, we need to break it down using SVD into 3 different matrices.
+We also have to specify the number of latent factors. I'm choosing 50
