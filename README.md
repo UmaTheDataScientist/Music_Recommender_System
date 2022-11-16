@@ -129,12 +129,47 @@ We will try to see the different trends in songs, albums, releases (That's what 
 
 #### Most popular songs:
 ![image](https://user-images.githubusercontent.com/105756607/202046194-034bd533-9a1c-442b-83af-9a36825c3292.png)
+
 You're the one is the most popular song
+
 #### Most popular artists:
 ![image](https://user-images.githubusercontent.com/105756607/202046624-1f8222a5-6621-4327-9c6c-045037388bc5.png)
+
 Cold Play is the most popular artist
 
 Even though Cold Play is the most popular artist, they don't have a candidate in the most popular song list.<br>
 
-#### Song vs Artist distribution:
+### Recommendation Engine:
+The basis of a recommendation engine is always the recorded interction between the users and products.<br>
+Different ways of recommending new tracks to different users:
+<ol>
+    <li><b>User-based recommendation engine:</b> Algorithm will look for similarity among users and will come up with recommendation based on the similarity.</li>        
+    <li><b>Content-based recommendation engine:</b> Algorithm will look for features about the content and find similar content. These similarities will be used to make recommendations to end user.</li>
+    <li><b>Hybrid-recommendation engine:</b> Alogithm will look for both features of users and content to develop recommendations. Also called Collaborative filtering. They are very effective.</li>
+</ol>
+
+### Popularity-Based Recommendation Engine: (User-based)
+This is the simplest recommendation engine.<br>
+Determine which songs in our dataset have the most users listening to them and then that will become our standard recommendation set for each user.<br>
+
+```
+def create_popularity_recommendation(train_data,user_id,item_id):
+    #Get a count of user_ids for each unique song as recommendation score
+    train_data_grouped = train_data.groupby([item_id]).agg({user_id:'count'}).reset_index()
+    train_data_grouped.rename(columns = {user_id:'score'},inplace = True)
+    
+    #Sort the songs based on recommendation score
+    train_data_sort = train_data_grouped.sort_values(['score',item_id],ascending = [0,1])
+    
+    #Generate a recommendation rank based upon score
+    train_data_sort['Rank'] = train_data_sort['score'].rank(ascending = 0,method  ='first')
+    
+    #Get the top 20 recommendations
+    popularity_recommendations = train_data_sort.head(20)
+    return popularity_recommendations
+```
+Any user is most likely to see the following songs in their recommendation if Popularity Based Recommendation Engine is used.
+
+![image](https://user-images.githubusercontent.com/105756607/202052924-964f7ec0-273c-471b-a6d6-072bd8cceed2.png)
+
 
