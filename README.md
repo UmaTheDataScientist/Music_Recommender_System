@@ -19,8 +19,8 @@
     <li>Download the <a href = "http://labrosa.ee.columbia.edu/millionsong/sites/default/files/challenge/train_triplets.txt.zip">Echnonest Taste Profile Subset</a>
         and <a href = 'http://millionsongdataset.com/sites/default/files/AdditionalFiles/track_metadata.db'>Song Information</a> files. </li>
         <li>Extract and place the .txt and .db files in the data folder.</li>
-    <li>Open the file Music_Recommender.ipynb in Jupyter Notebook</li>
-    <li>Run the file in Jupyter Notebook</li>
+    <li>Open the file code/Music_Recommender.ipynb in Jupyter Notebook</li>
+    <li>Click on Kernel -> Restart and Run All Cells</li>
     </ol>
 
 
