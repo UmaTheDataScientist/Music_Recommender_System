@@ -6,12 +6,23 @@
 <ul>
 <li>The million song dataset is a very popular dataset and is available at 
     <a href = "http://labrosa.ee.columbia.edu/millionsong/sites/default/files/challenge/train_triplets.txt.zip">Echnonest Taste Profile Subset</a><br>
-<li>The dataset ws created as a collaborative project between the Echonest and LABRosa. The dataset we have is only a subset of the million songs dataset.<br>
+<li>The dataset was created as a collaborative project between the Echonest and LABRosa. The dataset we have is only a subset of the million songs dataset.<br>
 <li>The dataset contains 48 million lines of triplets. Each triplet contains (user id, song id, play counts).
 <li>The overall dataset contains around a million unique users and around 384,000 songs from the million song dataset contained in it.
 <li>Upon decompression, the txt file takes a size of 2.79 GB<br>
 <li> Place your train_triplets.txt file in the data folder to execute this code.<br>
 </ul>
+
+## How to execute
+<ol>
+    <li>Clone the repository</li>
+    <li>Download the <a href = "http://labrosa.ee.columbia.edu/millionsong/sites/default/files/challenge/train_triplets.txt.zip">Echnonest Taste Profile Subset</a>
+        and <a href = 'http://millionsongdataset.com/sites/default/files/AdditionalFiles/track_metadata.db'>Song Information</a> files. </li>
+        <li>Extract and place the .txt and .db files in the data folder.</li>
+    <li>Open the file Music_Recommender.ipynb in Jupyter Notebook</li>
+    <li>Run the file in Jupyter Notebook</li>
+    </ol>
+
 
 ## Exploratory Data Analysis (EDA):
 EDA is important for this dataset as it is large. It will lead us to information that we can use to trim down the dataset a little.
@@ -219,4 +230,7 @@ Look at the recommendations we recieved for the user id 7
 
 Interesting right? Let's check for user 100
 
+![image](https://user-images.githubusercontent.com/105756607/202074211-9e39f565-b6a4-432d-afe4-8bbf1ff42468.png)
 
+Don't worry if your code takes too long to execute. Mine took about 26 minutes
+![image](https://media.tenor.com/uUNv_-QQhTIAAAAd/mrbean-bean.gif)
