@@ -312,5 +312,83 @@ col_array = mat_candidate.song_index_value.values
 data_sparse = coo_matrix((data_array,(row_array,col_array)),dtype = float)
 ```
 
+Our resultant data sparse matrix looks like below:
+
+![image](https://user-images.githubusercontent.com/105756607/202289371-919a8df7-565e-4d37-ad10-be160b628c14.png)
+
+
 Now that we have our utility matrix, we need to break it down using SVD into 3 different matrices.
-We also have to specify the number of latent factors. I'm choosing 50
+
+```
+#Compute SVD of the user ratings matrix
+def computeSVD(urm, K):
+    U, s, Vt = svds(urm,K)
+
+    dim = (len(s), len(s))
+    S = np.zeros(dim, dtype=np.float32)
+    for i in range(0, len(s)):
+        S[i,i] = mt.sqrt(s[i])
+
+    U = csc_matrix(U, dtype=np.float32)
+    S = csc_matrix(S, dtype=np.float32)
+    Vt = csc_matrix(Vt, dtype=np.float32)
+    
+    return U, S, Vt
+```
+Now let's use the above method to get our 3 matrices
+We also have to specify the number of latent factors. I'm choosing 50.
+
+```
+K = 50
+urm = data_sparse
+MAX_PID = urm.shape[1]
+MAX_UID = urm.shape[0]
+U, S, Vt = computeSVD(urm, K)
+
+```
+
+Select users you want the recommendations for 
+
+```
+uTest = [4]
+print("User id for whom recommendations are needed: %d" % uTest[0])
+
+```
+
+Now let's find recommendations for this user
+
+```
+#Compute estimated rating for the test user
+def computeEstimatedRatings(urm, U, S, Vt, uTest, K, test):
+    rightTerm = S*Vt 
+
+    estimatedRatings = np.zeros(shape=(MAX_UID, MAX_PID), dtype=np.float16)
+    for userTest in uTest:
+        prod = U[userTest, :]*rightTerm
+        #we convert the vector to dense format in order to get the indices 
+        #of the movies with the best estimated ratings 
+        estimatedRatings[userTest, :] = prod.todense()
+        recom = (-estimatedRatings[userTest, :]).argsort()[:250]
+    return recom
+```
+
+Call this method to get all the recommendations:
+
+
+```
+#Get estimated rating for test user
+print("Predictied ratings:")
+uTest_recommended_items = computeEstimatedRatings(urm, U, S, Vt, uTest, K, True)
+for user in uTest:
+    print("Recommendation for user with user id {}".format(user))
+    rank_value = 1
+    for i in uTest_recommended_items[0:10]:
+        song_details = small_set[small_set.song_index_value == i].drop_duplicates('song_index_value')[['title','artist_name']]
+        print("The number {} recommended song is {} BY {}".format(rank_value,list(song_details['title'])[0],list(song_details['artist_name'])[0]))
+        rank_value+=1
+```
+
+The following are the recommendations for the Test User:
+![image](https://user-images.githubusercontent.com/105756607/202291405-5f7b81b7-a027-4d40-ac6d-93de35bc3414.png)
+
+
