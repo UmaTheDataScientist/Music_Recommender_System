@@ -6,12 +6,23 @@
 <ul>
 <li>The million song dataset is a very popular dataset and is available at 
     <a href = "http://labrosa.ee.columbia.edu/millionsong/sites/default/files/challenge/train_triplets.txt.zip">Echnonest Taste Profile Subset</a><br>
-<li>The dataset ws created as a collaborative project between the Echonest and LABRosa. The dataset we have is only a subset of the million songs dataset.<br>
+<li>The dataset was created as a collaborative project between the Echonest and LABRosa. The dataset we have is only a subset of the million songs dataset.<br>
 <li>The dataset contains 48 million lines of triplets. Each triplet contains (user id, song id, play counts).
 <li>The overall dataset contains around a million unique users and around 384,000 songs from the million song dataset contained in it.
 <li>Upon decompression, the txt file takes a size of 2.79 GB<br>
 <li> Place your train_triplets.txt file in the data folder to execute this code.<br>
 </ul>
+
+## How to execute
+<ol>
+    <li>Clone the repository</li>
+    <li>Download the <a href = "http://labrosa.ee.columbia.edu/millionsong/sites/default/files/challenge/train_triplets.txt.zip">Echnonest Taste Profile Subset</a>
+        and <a href = 'http://millionsongdataset.com/sites/default/files/AdditionalFiles/track_metadata.db'>Song Information</a> files. </li>
+        <li>Extract and place the .txt and .db files in the data folder.</li>
+    <li>Open the file code/Music_Recommender.ipynb in Jupyter Notebook</li>
+    <li>Now, Click on Kernel -> Restart and Run All Cells</li>
+    </ol>
+
 
 ## Exploratory Data Analysis (EDA):
 EDA is important for this dataset as it is large. It will lead us to information that we can use to trim down the dataset a little.
@@ -174,4 +185,95 @@ Any user is most likely to see the following songs in their recommendation if Po
 
 ![image](https://user-images.githubusercontent.com/105756607/202052924-964f7ec0-273c-471b-a6d6-072bd8cceed2.png)
 
+However, This is not enough right? Let's get this more personalised!
+
+![image](https://github.com/UmaTheDataScientist/Music_Recommender_System/blob/main/images/not-good.gif)
+
+### Item Similarity Based Recommendation Engine: (Content-Based)
+This recommendation engine is based on calculating similarities between user's items and the other items in our dataset.
+Similarity between two songs is defined as: if 2 songs are being listened to by a large fraction of common users out of the total listeners, the 2 songs are said to be similar.
+
+Similarity(i,j) = intersection(user(i),user(j))/union((user(i),user(j))
+
+On the basis of this similarity metric, we can recommend a song to a user k with the following steps:
+1. Determine the song listened to by the user k
+2. Calculate the similarity of each song in the user's list to those in the dataset.
+3. Determine the songs that are most similar to the songs already listened to by the user.
+4. Select a subset of these songs as recommendation based on the similarity score.
+
+Since Step 2 is computation heavy, we will select most popular 5000 songs to make computation more feasible.
+
+```
+#Subsets of songs
+song_count_subset = song_count_df.head(n=5000)
+song_subset = song_count_subset.song
+triple_dataset_merged_subset = triple_dataset_merged[triple_dataset_merged.song.isin(song_subset)]
+```
+
+The Item based recommendation system: (Content-based)
+```
+train_data,test_data = train_test_split(triple_dataset_merged_subset,test_size = 0.3,random_state = 0)
+is_model = Recommenders.item_similarity_recommender_py()
+is_model.create(train_data,'user','title')
+
+#Change the user_id in the square brackets to get recommendation for any of the 100000 users in the dataset
+user_id = list(train_data.user)[7]
+user_items = is_model.get_user_items(user_id)
+is_model.recommend(user_id)
+```
+
+The recommendation system is more personalised for each user.
+
+Look at the recommendations we recieved for the user id 7
+
+![image](https://user-images.githubusercontent.com/105756607/202070163-3f21ab70-bfcd-451c-8a21-f3749f82f517.png)
+
+Interesting right? Let's check for user 100
+
+![image](https://user-images.githubusercontent.com/105756607/202074211-9e39f565-b6a4-432d-afe4-8bbf1ff42468.png)
+
+Don't worry if your code takes too long to execute. Mine took about 26 minutes
+![image](https://media.tenor.com/uUNv_-QQhTIAAAAd/mrbean-bean.gif)
+
+### Matrix Factorization Based Recommendation Engine: (Hybrid/Collaborative Filtering)
+
+<ul>
+
+<li>These are the most used recommendation systems.</li>
+<li>Matrix Factorization is identification of 2 matrices from an initial matrix, such that when these matrices are multiplied, we get the original matrix.</li>
+<li>Matrix Factorization helps discover latent features between two different kinds of entities</li>
+<li>Latent features here can be soulful lyrics, catchy music, etc</li>
+<li>The starting point to matrix factorization is the utility matrix.</li><br>
+
+**Utility Matrix:**
+
+![image](https://user-images.githubusercontent.com/105756607/202080252-391cd8a3-9908-48b7-a685-cf4370df3df8.png)
+
+<li>The utility matrix (U) is a matrix of (user X item) dimension in which each row represents a user and each column stands for an item </li>
+<li>The utility matrix (U) usually contains ratings given by users to the various movies.</li>
+<li> We can say recommend a movie M5 to a user C if (another user B  likes that movie M5 and user B and user C have given the same rating to movie M4) </li>
+</ul>
+
+Now that we have understood the Utility Matrix, let's go further:
+<ul>
+<li>Matrix Factorization is breaking down Utility Matrix (U) into 2 low rank matrices so that we can recreate U by multiplying those 2 matrices.</li>
+
+![image](https://user-images.githubusercontent.com/105756607/202081291-b41e7cd1-6e58-4e5e-ad46-2b09861ffcc2.png)
+
+<li> The 2 matrices are: A matrix with dimensions of num_users*factors and A matrix with dimensions of factors*num_movies</li>
+<li>We will use the most simplest algorithm SVD (Singular Value Decomposition) for determining matrix factorization</li>
+<li>SVD return 3 outputs: U,S,V but we need only 2</li>
+<li>Since we need only 2, We will reduce S matrix to k components</li>
+<li>Compute the square root of reduced matrix Sk to obtain matrix Sk^1/2</li>
+<li>The two factorized matrices will now be: U*Sk^1/2,sk^1/2*V</li>
+<li>We can generate the prediction of user i for product j by taking the dot product of ith row of first matrix with the jth column of the second matrix</li>
+</ul>
+
+<br>
+
+![image](https://media.tenor.com/Tex6pJ7riVsAAAAC/sleepy-yawn.gif)
+
+<br>
+
+Enough Chitchat, let's implement the code:
 
